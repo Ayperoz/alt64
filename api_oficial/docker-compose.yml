@@ -1,0 +1,51 @@
+version: '3.1'
+services:
+  db:
+    image: postgres
+    container_name: 'banco_de_dados'
+    restart: always
+    environment:
+      - POSTGRES_USER=waticket
+      - POSTGRES_PASSWORD=jFaP0z5nI2R2pr3CGIp5En
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - default-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - default-network
+
+  redis:
+    image: redis:latest
+    container_name: 'redis'
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/root/redis
+      - ./redis-data/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=123456
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    networks:
+      - default-network
+
+networks:
+  default-network:
+    driver: bridge
